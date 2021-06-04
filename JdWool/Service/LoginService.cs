@@ -63,7 +63,7 @@ namespace JdWool.Service
         public async Task<(ErrCodeEnum, string)> GetCookieAsync(Guid id)
         {
             var tmauthreflog = _dictionaryCache.GetValue(id.ToString());
-            var tmauthreflogDto = JsonSerializer.Deserialize<TmauthreflogDto>(tmauthreflog);
+            var tmauthreflogDto = JsonSerializer.Deserialize<TmauthreflogDto>(tmauthreflog);            
 
             var tmauthCheckTokenUrl = string.Format(TmauthCheckToken, tmauthreflogDto.Token, tmauthreflogDto.OkToken);
 
@@ -82,6 +82,8 @@ namespace JdWool.Service
                 var cookies = result.Headers.FirstOrDefault(x => x.Key == "Set-Cookie").Value
                     .Where(x => x.StartsWith("pt_key") || x.StartsWith("pt_pin"));
                 cookie = string.Join(";", cookies) + ";";
+
+                _dictionaryCache.RemoveValue(id.ToString());
             }
 
             return (tmauthCheckTokenDto.ErrCode, cookie);
